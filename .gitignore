@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Dependencies
+node_modules/
+
+# Upload directory
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Executables
+*.exe
+ngrok.exe
+
+# Test files (可根据需要调整)
+test.jpg
+*.pdf
+
+# Backup files
+*.backup

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>圖片/PDF文字提取工具 - Gemini AI</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-file-text"></i> 小美改作文工具</h1>
+            <p>使用 Gemini AI 技術，快速提取圖片和PDF中的文字內容</p>
+
+            <!-- Combined Selectors Container -->
+            <div class="combined-selectors">
+                <!-- API Key Selector -->
+                <div class="selector-item">
+                    <label for="apiKeySelect">
+                        <i class="fas fa-key"></i> 選擇 Google AI Key:
+                    </label>
+                    <select id="apiKeySelect" class="selector-dropdown">
+                        <option value="0">API Key 0</option>
+                        <option value="1">API Key 1</option>
+                        <option value="2">API Key 2</option>
+                        <option value="3">API Key 3</option>
+                        <option value="4">API Key 4</option>
+                    </select>
+                </div>
+
+                <!-- Gemini Model Selector -->
+                <div class="selector-item">
+                    <label for="modelSelect">
+                        <i class="fas fa-brain"></i> 選擇 Gemini 模型:
+                    </label>
+                    <select id="modelSelect" class="selector-dropdown">
+                        <option value="gemini-2.5-pro">Gemini 2.5 Pro (高品質)</option>
+                        <option value="gemini-2.5-flash">Gemini 2.5 Flash (快速)</option>
+                    </select>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- 上傳區域 -->
+            <div class="upload-section">
+                <div class="upload-area" id="uploadArea">
+                    <div class="upload-content">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <h3>拖拽多個文件到這裡或點擊選擇</h3>
+                        <p>支援 JPG, PNG, PDF 等格式，單檔最大 10MB</p>
+                        <input type="file" id="fileInput" accept="image/*,application/pdf" hidden multiple>
+                        <button class="upload-btn" id="uploadBtn">
+                            <i class="fas fa-folder-open"></i> 選擇文件
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 預覽區域 -->
+            <div class="preview-section" id="previewSection" style="display: none;">
+                <div class="preview-header-controls">
+                    <span id="fileCount"></span>
+                    <button class="clear-all-btn" id="clearAllBtn">
+                        <i class="fas fa-trash-alt"></i> 全部清除
+                    </button>
+                </div>
+                <div class="preview-grid" id="previewGrid">
+                    <!-- 文件預覽將動態添加到這裡 -->
+                </div>
+                <div class="preview-footer-controls">
+                    <button class="extract-btn" id="extractBtn">
+                        <i class="fas fa-magic"></i> 提取全部文字
+                    </button>
+                </div>
+            </div>
+
+            <!-- 載入動畫 -->
+            <div class="loading-section" id="loadingSection" style="display: none;">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p>小明閱讀文字中，請稍候...</p>
+            </div>
+
+            <!-- 結果區域 -->
+            <div class="result-section" id="resultSection" style="display: block;">
+                <div class="result-header">
+                    <h3><i class="fas fa-file-text"></i> 提取結果</h3>
+                    <div class="result-buttons">
+                        <button class="copy-btn" id="copyBtn">
+                            <i class="fas fa-copy"></i> 複製文字
+                        </button>
+                    </div>
+                </div>
+                <div class="result-content">
+                    <textarea id="resultText" placeholder="提取的文字將顯示在這裡..."></textarea>
+                </div>
+                
+                <!-- 自訂命令輸入區域 -->
+                <div class="custom-command-section">
+                    <h4><i class="fas fa-cog"></i> 自訂評分命令</h4>
+                    <div class="command-input-group">
+                        <textarea id="customCommand" placeholder="例如：你是資深中文老師，要按香港中學文憑試嘅評分標準，評鑑呢篇以「（題目）」為題嘅文章，並提出改善建議"></textarea>
+                        <div class="command-buttons">
+                            <button class="save-command-btn" id="saveCommandBtn">
+                                <i class="fas fa-save"></i> 保存命令
+                            </button>
+                            <button class="reset-command-btn" id="resetCommandBtn">
+                                <i class="fas fa-undo"></i> 重置為預設
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-actions">
+                    <button class="evaluate-btn" id="evaluateBtn">
+                        <i class="fas fa-star"></i> AI小明評分
+                    </button>
+                    <button class="evaluate-btn" id="deepseekEvaluateBtn">
+                        <i class="fas fa-robot"></i> DeepSeek評分
+                    </button>
+                    <button class="evaluate-btn" id="gptEvaluateBtn">
+                        <i class="fas fa-brain"></i> ChatGPT 4.1 評分
+                    </button>
+                </div>
+            </div>
+
+            <!-- 多評分結果容器 -->
+            <div id="evaluationContainer"></div>
+
+            <!-- 評分載入動畫 -->
+            <div class="loading-section" id="evaluateLoadingSection" style="display: none;">
+                <div class="loading-spinner">
+                    <i class="fas fa-spinner fa-spin"></i>
+                </div>
+                <p>小明正在評分中，請稍候...</p>
+            </div>
+
+            <!-- 錯誤提示 -->
+            <div class="error-section" id="errorSection" style="display: none;">
+                <div class="error-content">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p id="errorMessage"></p>
+                    <button class="error-close-btn">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Powered by <strong>Google Gemini AI</strong> | 小美圖片文字提取工具</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+</body>
+</html> 
